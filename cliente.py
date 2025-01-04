@@ -1,12 +1,16 @@
 import asyncio
 import base64
 from cryptography.fernet import Fernet
+import ssl
+import re
 
 # Datos de configuración SMTP
 SMTP_SERVER = "127.0.0.1"
 SMTP_PORT = 2525
 USERNAME = "user"
 PASSWORD = "password"
+
+EMAIL_REGEX = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
 # Leer la clave de cifrado desde el archivo
 def load_key():
@@ -16,13 +20,29 @@ def load_key():
 
 cipher_suite = Fernet(load_key())
 
+# Validar direcciones de correo electrónico
+def validate_email(email):
+    if not re.match(EMAIL_REGEX, email):
+        raise ValueError(f"Dirección de correo no válida: {email}")
+
 # Función para enviar el correo por SMTP
 async def send_email(sender, recipient, subject, message):
     try:
+        # Validar correos electrónicos
+        validate_email(sender)
+        validate_email(recipient)
+        
         # Cifrar el mensaje
-        encrypted_message = cipher_suite.encrypt(f"From: {sender}\r\nTo: {recipient}\r\nSubject: {subject}\r\n\r\n{message}".encode())
+        nonce = Fernet.generate_key()[:8].decode()  # Nonce de 8 bytes
+        full_message = f"Nonce: {nonce}\nFrom: {sender}\r\nTo: {recipient}\r\nSubject: {subject}\r\n\r\n{message}"
+        encrypted_message = cipher_suite.encrypt(full_message.encode())
 
-        reader, writer = await asyncio.open_connection(SMTP_SERVER, SMTP_PORT)
+        # Crear contexto SSL
+        ssl_context = ssl.create_default_context()
+
+        # Establecer conexión con el servidor SMTP usando SSL
+        reader, writer = await asyncio.open_connection(SMTP_SERVER, SMTP_PORT, ssl=ssl_context)
+    
         data = await reader.read(100)
         print(f"Servidor: {data.decode()}")
         
@@ -59,6 +79,8 @@ async def send_email(sender, recipient, subject, message):
         await writer.wait_closed()
 
         print("Correo enviado correctamente.")
-
+    
+    except ValueError as ve:
+        print(f"Error de validación: {ve}")
     except Exception as e:
         print(f"Error al enviar el correo: {str(e)}")
