@@ -111,8 +111,8 @@ class ServerWindow(BoxLayout):
     def __init__(self, app, **kwargs):
         super().__init__(**kwargs)
         self.orientation = 'vertical'
-        self.spacing = 20  # Menor espacio entre elementos
-        self.padding = (30, 20, 30, 0)  # Ajustar el margen para subir los elementos
+        self.spacing = 10  # Espaciado entre elementos
+        self.padding = (30, 20, 30, 0)  # Ajustar márgenes para subir contenido
         self.app = app
 
         # Título
@@ -121,30 +121,30 @@ class ServerWindow(BoxLayout):
                                 theme_text_color="Custom",
                                 text_color=(1, 1, 1, 1),
                                 font_style="H4",
-                                size_hint=(1 , 0.5)))
+                                size_hint=(1, 0.1)))
 
         # Scroll para mensajes
-        self.messages_list = ScrollView(size_hint=(1, 1), height=300)
+        self.messages_list = ScrollView(size_hint=(1, None), height=300)
         self.messages_box = BoxLayout(orientation="vertical", size_hint_y=None, spacing=10)
         self.messages_box.bind(minimum_height=self.messages_box.setter('height'))
 
         # Mensajes simulados
-        for i in range(5):
-            message = MDCard(size_hint=(1, None), height="100dp", padding=10)
+        simulated_messages = [
+            "Asunto: Test 1\nRemitente: user@example.com\nFecha: 01/01/2025\nMensaje: Este es un mensaje corto.",
+            "Asunto: Test 2\nRemitente: user@example.com\nFecha: 01/01/2025\nMensaje: Este es un mensaje un poco más largo para probar cómo se ajusta el tamaño de la tarjeta al contenido.",
+            "Asunto: Test 3\nRemitente: user@example.com\nFecha: 01/01/2025\nMensaje: Este es un mensaje extremadamente largo que debe envolver el texto y ajustar automáticamente el tamaño de la tarjeta para que todo el contenido sea visible sin problemas.",
+        ]
+
+        for msg in simulated_messages:
+            message = MDCard(size_hint=(None, None), width="400dp", padding=10,
+                             pos_hint={"center_x": 0.5}, adaptive_height=True)  # Ajuste automático en altura
             message.add_widget(MDLabel(
-                text=f"Asunto: Test {i + 1}\nRemitente: user\nFecha: 01/01/202566",
+                text=msg,
                 halign="left",
                 theme_text_color="Secondary",
-            ))
-            self.messages_box.add_widget(message)
-            
-        for i in range(5):
-            message = MDCard(size_hint=(None, None), size=("700dp", "100dp"), padding=10,
-                             pos_hint={"center_x": 0.4})  # Tamaño reducido al 50% del ancho
-            message.add_widget(MDLabel(
-                text=f"Asunto: Test {i + 1}\nRemitente: user\nFecha: 01/01/2025",
-                halign="left",
-                theme_text_color="Secondary",
+                size_hint_y=None,
+                valign="top",  # Alineación vertical en la parte superior
+                adaptive_height=True,  # Permitir ajuste dinámico del texto
             ))
             self.messages_box.add_widget(message)
 
@@ -158,7 +158,6 @@ class ServerWindow(BoxLayout):
                                           pos_hint={"center_x": 0.5},
                                           on_press=self.app.show_main_interface)
         self.add_widget(self.back_button)
-
 
 
 # Clase principal de la aplicación
