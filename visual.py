@@ -121,10 +121,10 @@ class ServerWindow(BoxLayout):
                                 theme_text_color="Custom",
                                 text_color=(1, 1, 1, 1),
                                 font_style="H4",
-                                size_hint=(1, 0.1)))
+                                size_hint=(1, 0.5)))
 
         # Scroll para mensajes
-        self.messages_list = ScrollView(size_hint=(1, None), height=300)
+        self.messages_list = ScrollView(size_hint=(1, 1), height=300)
         self.messages_box = BoxLayout(orientation="vertical", size_hint_y=None, spacing=10)
         self.messages_box.bind(minimum_height=self.messages_box.setter('height'))
 
@@ -133,11 +133,18 @@ class ServerWindow(BoxLayout):
             "Asunto: Test 1\nRemitente: user@example.com\nFecha: 01/01/2025\nMensaje: Este es un mensaje corto.",
             "Asunto: Test 2\nRemitente: user@example.com\nFecha: 01/01/2025\nMensaje: Este es un mensaje un poco más largo para probar cómo se ajusta el tamaño de la tarjeta al contenido.",
             "Asunto: Test 3\nRemitente: user@example.com\nFecha: 01/01/2025\nMensaje: Este es un mensaje extremadamente largo que debe envolver el texto y ajustar automáticamente el tamaño de la tarjeta para que todo el contenido sea visible sin problemas.",
+            "Asunto: Test 1\nRemitente: user@example.com\nFecha: 01/01/2025\nMensaje: Este es un mensaje corto.",
+            "Asunto: Test 2\nRemitente: user@example.com\nFecha: 01/01/2025\nMensaje: Este es un mensaje un poco más largo para probar cómo se ajusta el tamaño de la tarjeta al contenido.",
+            "Asunto: Test 3\nRemitente: user@example.com\nFecha: 01/01/2025\nMensaje: Este es un mensaje extremadamente largo que debe envolver el texto y ajustar automáticamente el tamaño de la tarjeta para que todo el contenido sea visible sin problemas.",
         ]
 
         for msg in simulated_messages:
-            message = MDCard(size_hint=(None, None), width="400dp", padding=10,
-                             pos_hint={"center_x": 0.5}, adaptive_height=True)  # Ajuste automático en altura
+            message = MDCard(
+                size_hint=(0.6, None),  # 60% del ancho de la ventana
+                padding=10,
+                pos_hint={"x": 0.05},  # Espaciado del borde izquierdo (5%)
+                adaptive_height=True,  # Ajuste automático en altura
+            )
             message.add_widget(MDLabel(
                 text=msg,
                 halign="left",
