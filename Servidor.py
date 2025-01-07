@@ -174,7 +174,6 @@ async def handle_client(reader, writer):
     await writer.wait_closed()
 
 
-
 def save_email(mail_from, rcpt_to, email_data):
     with open("emails.txt", "a") as f:
         f.write(f"From: {mail_from}\n")
@@ -197,6 +196,5 @@ async def start_server():
 async def start_smtp_server():
     from Servidor import start_server  # Asegúrate de importar correctamente tu función `start_server`
     await start_server()
-
-def run_smtp_server():
+if __name__ == "__main__":
     asyncio.run(start_smtp_server())

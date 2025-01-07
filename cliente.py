@@ -3,7 +3,7 @@ import base64
 from cryptography.fernet import Fernet
 import ssl
 from email.utils import formatdate
-from email_validator import validate_email as validate_email_lib, EmailNotValidError
+
 
 SMTP_SERVER = "127.0.0.1"
 SMTP_PORT = 2525
@@ -49,7 +49,8 @@ async def send_email(sender, recipient, subject, message):
     encrypted_message = cipher_suite.encrypt(full_message.encode())
 
     ssl_context = ssl.create_default_context()
-
+    ssl_context.load_verify_locations("server.crt")
+    
     reader, writer = None, None  # Inicializar writer y reader fuera del try
 
     try:
