@@ -1,0 +1,53 @@
+From: remitente1@example.com
+Subject: Asunto del primer mensaje
+Date: 2025-01-01
+
+Este es el cuerpo del primer mensaje. Contiene varios detalles.
+
+From: remitente2@example.com
+Subject: Asunto del segundo mensaje
+Date: 2025-01-02
+
+Este es el cuerpo del segundo mensaje. Aquí van más detalles.
+
+From: remitente3@example.com
+Subject: Asunto del tercer mensaje
+Date: 2025-01-03
+
+Este es el cuerpo del tercer mensaje.
+
+From: remitente1@example.com
+Subject: Asunto del primer mensaje
+Date: 2025-01-01
+
+Este es el cuerpo del primer mensaje. Contiene varios detalles.
+
+From: remitente2@example.com
+Subject: Asunto del segundo mensaje
+Date: 2025-01-02
+
+Este es el cuerpo del segundo mensaje. Aquí van más detalles.
+
+From: remitente3@example.com
+Subject: Asunto del tercer mensaje
+Date: 2025-01-03
+
+Este es el cuerpo del tercer mensaje.
+
+From: remitente1@example.com
+Subject: Asunto del primer mensaje
+Date: 2025-01-01
+
+Este es el cuerpo del primer mensaje. Contiene varios detalles.
+
+From: remitente2@example.com
+Subject: Asunto del segundo mensaje
+Date: 2025-01-02
+
+Este es el cuerpo del segundo mensaje. Aquí van más detalles.
+
+From: remitente3@example.com
+Subject: Asunto del tercer mensaje
+Date: 2025-01-03
+
+Este es el cuerpo del tercer mensaje.
