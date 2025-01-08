@@ -51,3 +51,21 @@ Subject: Asunto del tercer mensaje
 Date: 2025-01-03
 
 Este es el cuerpo del tercer mensaje.
+From: <remitente@miempresa.com>
+To: <destinatario@miempresa.com>
+From: remitente@miempresa.com
+To: destinatario@miempresa.com
+Subject: Asunto de prueba
+Date: Tue, 07 Jan 2025 17:27:41 -0500
+
+Este es un mensaje de prueba.
+
+From: <remitente@miempresa.com>
+To: <destinatario@miempresa.com>
+From: remitente@miempresa.com
+To: destinatario@miempresa.com
+Subject: Asunto de prueba
+Date: Wed, 08 Jan 2025 08:21:14 -0500
+
+Este es un mensaje de prueba.
+
