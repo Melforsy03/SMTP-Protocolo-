@@ -176,9 +176,9 @@ async def handle_client(reader, writer):
 
 def save_email(mail_from, rcpt_to, email_data):
     with open("emails.txt", "a") as f:
-        f.write(f"From: {mail_from}\n")
-        f.write(f"To: {rcpt_to}\n")
-        f.write(f"{email_data}\n\n")
+        f.write(f"De: {mail_from}\n")
+        f.write(f"Para: {rcpt_to}\n")
+        f.write(f"Mensaje{email_data}\n\n")
 
 
 async def start_server():
@@ -192,6 +192,34 @@ async def start_server():
 
     async with server:
         await server.serve_forever()
+            
+def read_emails_from_file():
+    try:
+        with open("emails.txt", "r") as f:
+            lines = f.readlines()
+        
+        emails = []
+        email = ""
+        
+        for line in lines:
+            line = line.strip()  # Eliminar saltos de línea y espacios extras
+            if line:
+                email += line + "\n"  # Agregar la línea al correo
+            else:
+                if email:  # Cuando encontramos una línea vacía, significa que el correo terminó
+                    emails.append(email.strip())  # Añadir el correo completo a la lista
+                    email = ""  # Reiniciar para el siguiente correo
+        
+        # Asegurarse de agregar el último correo si no termina con una línea vacía
+        if email:
+            emails.append(email.strip())
+        
+        return emails
+        
+    except FileNotFoundError:
+        logging.error("El archivo 'emails.txt' no fue encontrado.")
+        return []
+
 
 async def start_smtp_server():
     from Servidor import start_server  # Asegúrate de importar correctamente tu función `start_server`

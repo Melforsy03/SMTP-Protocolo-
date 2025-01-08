@@ -1,71 +1,12 @@
-From: remitente1@example.com
-Subject: Asunto del primer mensaje
-Date: 2025-01-01
+From: remitente@gmail.com
+To: demitente@gmail.com
+Subject: Prueba 1
+Date: 2025-01-08 09:18:28
+Body: Viendo si ya funciona todo junto, con la parte visual. No funciono.
 
-Este es el cuerpo del primer mensaje. Contiene varios detalles.
-
-From: remitente2@example.com
-Subject: Asunto del segundo mensaje
-Date: 2025-01-02
-
-Este es el cuerpo del segundo mensaje. Aquí van más detalles.
-
-From: remitente3@example.com
-Subject: Asunto del tercer mensaje
-Date: 2025-01-03
-
-Este es el cuerpo del tercer mensaje.
-
-From: remitente1@example.com
-Subject: Asunto del primer mensaje
-Date: 2025-01-01
-
-Este es el cuerpo del primer mensaje. Contiene varios detalles.
-
-From: remitente2@example.com
-Subject: Asunto del segundo mensaje
-Date: 2025-01-02
-
-Este es el cuerpo del segundo mensaje. Aquí van más detalles.
-
-From: remitente3@example.com
-Subject: Asunto del tercer mensaje
-Date: 2025-01-03
-
-Este es el cuerpo del tercer mensaje.
-
-From: remitente1@example.com
-Subject: Asunto del primer mensaje
-Date: 2025-01-01
-
-Este es el cuerpo del primer mensaje. Contiene varios detalles.
-
-From: remitente2@example.com
-Subject: Asunto del segundo mensaje
-Date: 2025-01-02
-
-Este es el cuerpo del segundo mensaje. Aquí van más detalles.
-
-From: remitente3@example.com
-Subject: Asunto del tercer mensaje
-Date: 2025-01-03
-
-Este es el cuerpo del tercer mensaje.
-From: <remitente@miempresa.com>
-To: <destinatario@miempresa.com>
-From: remitente@miempresa.com
-To: destinatario@miempresa.com
-Subject: Asunto de prueba
-Date: Tue, 07 Jan 2025 17:27:41 -0500
-
-Este es un mensaje de prueba.
-
-From: <remitente@miempresa.com>
-To: <destinatario@miempresa.com>
-From: remitente@miempresa.com
-To: destinatario@miempresa.com
-Subject: Asunto de prueba
-Date: Wed, 08 Jan 2025 08:21:14 -0500
-
-Este es un mensaje de prueba.
+From: remitente@gmail.com
+To: demitente@gmail.com
+Subject: Prueba 2
+Date: 2025-01-08 09:40:58
+Body: Hay problemas con la menera en la q se estan guardandolos sms. Se repiten los campos (To, From, Date). Y se guarda con un espacio de por medio entre la informacion del envio y el sms, por tanto lo coge como dos mensajes distintos.
 

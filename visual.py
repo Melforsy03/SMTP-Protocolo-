@@ -8,11 +8,13 @@ from kivymd.uix.spinner import MDSpinner
 from kivymd.toast import toast
 from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.dialog import MDDialog
+from kivy.uix.scrollview import ScrollView
+from kivymd.uix.card import MDCard
 from kivy.metrics import dp
 import asyncio
 import re
 from cliente import send_email
-from Servidor import load_emails
+from Servidor import read_emails_from_file
 
 EMAIL_REGEX = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
@@ -151,53 +153,46 @@ class ServerWindow(BoxLayout):
         # Título
         self.add_widget(MDLabel(text="Bandeja de Correos",
                                 halign="center",
+                                theme_text_color="Custom",
+                                text_color=(1, 1, 1, 1),
                                 font_style="H4",
-                                size_hint=(1, 0.1)))
+                                size_hint=(1, 0.5)))
 
-        # Tabla de correos
-        self.add_widget(self._build_emails_table())
+        # Scroll para mensajes
+        self.messages_list = ScrollView(size_hint=(1, 1), height=300)
+        self.messages_box = BoxLayout(orientation="vertical", size_hint_y=None, spacing=10)
+        self.messages_box.bind(minimum_height=self.messages_box.setter('height'))
+
+        # Leer los correos desde el archivo y mostrarlos
+        emails = read_emails_from_file() 
+        
+        for email in emails:
+            message = MDCard(
+                size_hint=(0.6, None),
+                padding=10,
+                pos_hint={"x": 0.05},
+                adaptive_height=True,
+            )
+            message.add_widget(MDLabel(
+                text=email,
+                halign="left",
+                theme_text_color="Secondary",
+                size_hint_y=None,
+                valign="top",
+                adaptive_height=True,
+            ))
+            self.messages_box.add_widget(message)
+
+        self.messages_list.add_widget(self.messages_box)
+        self.add_widget(self.messages_list)
 
         # Botón Volver
-        self.add_widget(MDRaisedButton(text="Volver",
-                                       size_hint=(None, None),
-                                       size=("200dp", "50dp"),
-                                       pos_hint={"center_x": 0.5},
-                                       on_press=self.app.show_main_interface))
-
-    def _build_emails_table(self):
-        emails = load_emails()
-        rows = [(email['from'], email['subject'], email['date']) for email in emails]
-
-        # Aumentamos el tamaño de la tabla
-        data_table = MDDataTable(
-            size_hint=(1, 1),
-            column_data=[("Remitente", dp(40)), ("Asunto", dp(50)), ("Fecha", dp(30))],
-            row_data=rows,
-            elevation=2  # Sombra para la tabla
-        )
-
-        # Evento de clic en una fila para mostrar el cuerpo del correo
-        def show_body(instance, row):
-            dialog = MDDialog(
-                title="Cuerpo del Mensaje",
-                text=row[3],
-                size_hint=(0.8, 0.6),
-                buttons=[
-                    MDRaisedButton(
-                        text="Cerrar", 
-                        on_release=lambda x: dialog.dismiss()
-                    )
-                ]
-            )
-            dialog.open()
-
-        # Asignar la función a cada fila
-        def row_on_release(instance, row):
-            show_body(instance, row)
-
-        data_table.bind(on_row_release=row_on_release)
-
-        return data_table
+        self.back_button = MDRaisedButton(text="Volver",
+                                          size_hint=(None, None),
+                                          size=("200dp", "50dp"),
+                                          pos_hint={"center_x": 0.5},
+                                          on_press=self.app.show_main_interface)
+        self.add_widget(self.back_button)
 
 # Clase principal de la aplicación
 class SMTPApp(MDApp):

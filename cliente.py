@@ -127,12 +127,3 @@ async def send_email(sender, recipient, subject, message):
             logging.info("Cerrando la conexión con el servidor.")
             writer.close()
             await writer.wait_closed()
-
-# Prueba el envío de correo
-if __name__ == "__main__":
-    sender = "remitente@miempresa.com"
-    recipient = "destinatario@miempresa.com"
-    subject = "Asunto de prueba"
-    message = "Este es un mensaje de prueba."
-
-    asyncio.run(send_email(sender, recipient, subject, message))
