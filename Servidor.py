@@ -176,9 +176,10 @@ async def handle_client(reader, writer):
 
 def save_email(mail_from, rcpt_to, email_data):
     with open("emails.txt", "a") as f:
-        f.write(f"De: {mail_from}\n")
-        f.write(f"Para: {rcpt_to}\n")
-        f.write(f"Mensaje{email_data}\n\n")
+        #f.write(f"De: {mail_from}\n")
+        #f.write(f"Para: {rcpt_to}\n")
+        f.write(f"\n")
+        f.write(f"{email_data} \n\n")
 
 
 async def start_server():
@@ -200,25 +201,33 @@ def read_emails_from_file():
         
         emails = []
         email = ""
+        empty_line_count = 0
         
         for line in lines:
             line = line.strip()  # Eliminar saltos de línea y espacios extras
-            if line:
-                email += line + "\n"  # Agregar la línea al correo
+            
+            if not line:  # Si la línea está vacía
+                empty_line_count += 1
+                email += "\n"
+                if empty_line_count == 2:  # Si hay dos líneas vacías consecutivas
+                    if email:  # Guardar el SMS si no está vacío
+                        emails.append(email.strip())
+                        email = ""  # Reiniciar para el siguiente correo
+                    empty_line_count = 0  # Reiniciar el contador
             else:
-                if email:  # Cuando encontramos una línea vacía, significa que el correo terminó
-                    emails.append(email.strip())  # Añadir el correo completo a la lista
-                    email = ""  # Reiniciar para el siguiente correo
+                empty_line_count = 0  # Reiniciar el contador si no es una línea vacía
+                email += line + "\n"  # Agregar la línea al correo
         
-        # Asegurarse de agregar el último correo si no termina con una línea vacía
+        # Asegurarse de agregar el último correo si no termina con dos líneas vacías
         if email:
             emails.append(email.strip())
         
         return emails
-        
+
     except FileNotFoundError:
-        logging.error("El archivo 'emails.txt' no fue encontrado.")
+        print("El archivo no existe.")
         return []
+
 
 
 async def start_smtp_server():

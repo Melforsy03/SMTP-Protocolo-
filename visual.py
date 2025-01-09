@@ -7,6 +7,7 @@ from kivymd.uix.boxlayout import BoxLayout
 from kivymd.uix.spinner import MDSpinner
 from kivymd.toast import toast
 from kivymd.uix.datatables import MDDataTable
+from kivy.uix.scrollview import ScrollView  # Importar ScrollView si no está importado
 from kivymd.uix.dialog import MDDialog
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.card import MDCard
@@ -78,7 +79,9 @@ class ClientWindow(BoxLayout):
 
         # Mensaje
         self.message_input = MDTextField(hint_text="Introduce tu mensaje", multiline=True, size_hint=(1, None), height="200dp")
-        self.add_widget(self._build_labeled_field("Mensaje:", self.message_input))
+        message_scroll = ScrollView(size_hint=(1, None), height="60dp")  # Ajustar el tamaño del ScrollView
+        message_scroll.add_widget(self.message_input)
+        self.add_widget(self._build_labeled_field("Mensaje:", message_scroll))
 
         # Botón Enviar
         self.send_button = MDRaisedButton(text="Enviar",
