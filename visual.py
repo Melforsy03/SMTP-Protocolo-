@@ -16,7 +16,8 @@ import asyncio
 import re
 from cliente import send_email
 from Servidor import read_emails_from_file
-
+import threading
+from Servidor import start_server
 EMAIL_REGEX = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
 # Layout de la ventana principal
@@ -221,6 +222,16 @@ class SMTPApp(MDApp):
     def show_server_interface(self, *args):
         self.root.clear_widgets()
         self.root.add_widget(ServerWindow(self))
+    
+    def start_server_thread(self):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(start_server())
+
+    def on_start(self):
+        # Iniciar el servidor en un hilo separado
+        server_thread = threading.Thread(target=self.start_server_thread)
+        server_thread.start()
 
 if __name__ == "__main__":
     SMTPApp().run()
