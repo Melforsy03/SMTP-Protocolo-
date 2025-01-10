@@ -18,7 +18,10 @@ from cliente import send_email
 from Servidor import read_emails_from_file
 import threading
 from Servidor import start_server
+
 EMAIL_REGEX = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+# Almacenamiento de usuarios (esto puede estar en un archivo o base de datos)
+USER_DATA = {}
 
 # Layout de la ventana principal
 class MainWindow(BoxLayout):
@@ -48,8 +51,96 @@ class MainWindow(BoxLayout):
                                         pos_hint={"center_x": 0.5},
                                         on_press=self.app.show_server_interface))
 
-# Ventana del Cliente para enviar mensaje
-import asyncio
+class LoginWindow(BoxLayout):
+    def __init__(self, app, **kwargs):
+        super().__init__(**kwargs)
+        self.orientation = 'vertical'
+        self.spacing = 10
+        self.padding = 30
+        self.app = app
+
+        self.add_widget(MDLabel(text="Login", halign="center", font_style="H4", size_hint=(1, 0.1)))
+
+        self.email_input = MDTextField(hint_text="Introduce tu correo", size_hint=(1, None), height="40dp")
+        self.add_widget(self._build_labeled_field("Correo:", self.email_input))
+
+        self.password_input = MDTextField(hint_text="Introduce tu contraseña", size_hint=(1, None), height="40dp", password=True)
+        self.add_widget(self._build_labeled_field("Contraseña:", self.password_input))
+
+        self.login_button = MDRaisedButton(text="Iniciar Sesión", size_hint=(None, None), size=("200dp", "50dp"), pos_hint={"center_x": 0.5}, on_press=self.login)
+        self.add_widget(self.login_button)
+
+        self.register_button = MDRaisedButton(text="Registrar", size_hint=(None, None), size=("200dp", "50dp"), pos_hint={"center_x": 0.5}, on_press=self.app.show_register_interface)
+        self.add_widget(self.register_button)
+
+    def _build_labeled_field(self, label_text, input_field):
+        layout = BoxLayout(orientation="vertical", size_hint=(1, None), height="100dp")
+        layout.add_widget(MDLabel(text=label_text, halign="left"))
+        layout.add_widget(input_field)
+        return layout
+
+    def login(self, instance):
+        email = self.email_input.text
+        password = self.password_input.text
+
+        if email not in USER_DATA or USER_DATA[email] != password:
+            toast("Credenciales incorrectas.")
+            return
+
+        # Guardar las credenciales en la aplicación
+        self.app.set_user_credentials(email, password)
+
+        toast("Login exitoso.")
+        self.app.show_main_interface()
+
+
+class RegisterWindow(BoxLayout):
+    def __init__(self, app, **kwargs):
+        super().__init__(**kwargs)
+        self.orientation = 'vertical'
+        self.spacing = 10
+        self.padding = 30
+        self.app = app
+
+        self.add_widget(MDLabel(text="Registro", halign="center", font_style="H4", size_hint=(1, 0.1)))
+
+        self.email_input = MDTextField(hint_text="Introduce tu correo", size_hint=(1, None), height="40dp")
+        self.add_widget(self._build_labeled_field("Correo:", self.email_input))
+
+        self.password_input = MDTextField(hint_text="Introduce tu contraseña", size_hint=(1, None), height="40dp", password=True)
+        self.add_widget(self._build_labeled_field("Contraseña:", self.password_input))
+
+        self.confirm_password_input = MDTextField(hint_text="Confirma tu contraseña", size_hint=(1, None), height="40dp", password=True)
+        self.add_widget(self._build_labeled_field("Confirmar Contraseña:", self.confirm_password_input))
+
+        self.register_button = MDRaisedButton(text="Registrar", size_hint=(None, None), size=("200dp", "50dp"), pos_hint={"center_x": 0.5}, on_press=self.register)
+        self.add_widget(self.register_button)
+
+        self.login_button = MDRaisedButton(text="Volver al Login", size_hint=(None, None), size=("200dp", "50dp"), pos_hint={"center_x": 0.5}, on_press=self.app.show_login_interface)
+        self.add_widget(self.login_button)
+
+    def _build_labeled_field(self, label_text, input_field):
+        layout = BoxLayout(orientation="vertical", size_hint=(1, None), height="100dp")
+        layout.add_widget(MDLabel(text=label_text, halign="left"))
+        layout.add_widget(input_field)
+        return layout
+
+    def register(self, instance):
+        email = self.email_input.text
+        password = self.password_input.text
+        confirm_password = self.confirm_password_input.text
+
+        if email in USER_DATA:
+            toast("El correo ya está registrado.")
+            return
+
+        if password != confirm_password:
+            toast("Las contraseñas no coinciden.")
+            return
+
+        USER_DATA[email] = password
+        toast("Registro exitoso.")
+        self.app.show_login_interface()
 
 class ClientWindow(BoxLayout):
     def __init__(self, app, **kwargs):
@@ -107,7 +198,12 @@ class ClientWindow(BoxLayout):
 
     async def send_message_async(self, sender, recipient, subject, message):
         try:
-            await send_email(sender, recipient, subject, message)
+            # Usar las credenciales del usuario almacenadas en la app
+            username = self.app.username
+            password = self.app.password
+
+            # Enviar correo utilizando las credenciales del usuario
+            await send_email(username, password, sender, recipient, subject, message)
             toast("Correo enviado correctamente.")  # Usamos el toast aquí
             self.app.show_main_interface()
         except Exception as e:
@@ -145,7 +241,7 @@ class ClientWindow(BoxLayout):
         # Ejecutar la tarea asincrónica correctamente
         asyncio.run(self.send_message_async(sender, recipient, subject, message))
 
-# Ventana del Servidor para ver los mensajes
+
 class ServerWindow(BoxLayout):
     def __init__(self, app, **kwargs):
         super().__init__(**kwargs)
@@ -207,9 +303,24 @@ class SMTPApp(MDApp):
         self.theme_cls.theme_style = "Dark" 
         self.theme_cls.accent_palette = "Purple"  
         self.theme_cls.accent_hue = "500" 
-
-        self.main_window = MainWindow(self)
+        
+        self.username = None
+        self.password = None
+        self.main_window = LoginWindow(self)
         return self.main_window
+    
+    def set_user_credentials(self, username, password):
+        """Guardar las credenciales del usuario."""
+        self.username = username
+        self.password = password
+        
+    def show_login_interface(self, *args):
+        self.root.clear_widgets()
+        self.root.add_widget(LoginWindow(self))
+
+    def show_register_interface(self, *args):
+        self.root.clear_widgets()
+        self.root.add_widget(RegisterWindow(self))
 
     def show_main_interface(self, *args):
         self.root.clear_widgets()
@@ -222,7 +333,7 @@ class SMTPApp(MDApp):
     def show_server_interface(self, *args):
         self.root.clear_widgets()
         self.root.add_widget(ServerWindow(self))
-    
+
     def start_server_thread(self):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -232,6 +343,7 @@ class SMTPApp(MDApp):
         # Iniciar el servidor en un hilo separado
         server_thread = threading.Thread(target=self.start_server_thread)
         server_thread.start()
+
 
 if __name__ == "__main__":
     SMTPApp().run()

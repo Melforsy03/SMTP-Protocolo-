@@ -10,8 +10,6 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 
 SMTP_SERVER = "127.0.0.1"
 SMTP_PORT = 2525
-USERNAME = "user"
-PASSWORD = "password"
 
 def load_key():
     logging.info("Cargando clave de cifrado.")
@@ -36,8 +34,13 @@ async def read_response(reader):
     
     return response_decoded
 
-async def send_email(sender, recipient, subject, message):
-    logging.info("Iniciando envío de correo.")
+# Elimina las líneas donde defines USERNAME y PASSWORD de forma fija
+# USERNAME = "user"
+# PASSWORD = "password"
+
+# Nueva función que recibirá los valores de USERNAME y PASSWORD como parámetros
+async def send_email(sender, recipient, subject, message, username, password):
+    logging.info("Iniciando envío de correo con credenciales externas.")
     validate_email(sender)
     validate_email(recipient)
 
@@ -75,15 +78,15 @@ async def send_email(sender, recipient, subject, message):
         await writer.drain()
         await read_response(reader)
 
-        # Enviar nombre de usuario
+        # Enviar nombre de usuario (pasando el username desde la función externa)
         logging.debug("Enviando nombre de usuario.")
-        writer.write(base64.b64encode(USERNAME.encode()) + b"\r\n")
+        writer.write(base64.b64encode(username.encode()) + b"\r\n")
         await writer.drain()
         await read_response(reader)
 
-        # Enviar contraseña
+        # Enviar contraseña (pasando el password desde la función externa)
         logging.debug("Enviando contraseña.")
-        writer.write(base64.b64encode(PASSWORD.encode()) + b"\r\n")
+        writer.write(base64.b64encode(password.encode()) + b"\r\n")
         await writer.drain()
         await read_response(reader)
 
@@ -127,3 +130,4 @@ async def send_email(sender, recipient, subject, message):
             logging.info("Cerrando la conexión con el servidor.")
             writer.close()
             await writer.wait_closed()
+
