@@ -34,11 +34,18 @@ async def read_response(reader):
     
     return response_decoded
 
-# Elimina las líneas donde defines USERNAME y PASSWORD de forma fija
-# USERNAME = "user"
-# PASSWORD = "password"
-
-# Nueva función que recibirá los valores de USERNAME y PASSWORD como parámetros
+# Solicitar mensajes del servidor
+async def retrieve_messages(reader, writer):
+    try:
+        logging.info("Solicitando mensajes al servidor.")
+        writer.write(b"RETRIEVE\r\n")
+        await writer.drain()
+        response = await read_response(reader)
+        return response
+    except Exception as e:
+        logging.error(f"Error al solicitar mensajes: {e}")
+        return None
+    
 async def send_email(sender, recipient, subject, message, username, password):
     logging.info("Iniciando envío de correo con credenciales externas.")
     validate_email(sender)
@@ -78,18 +85,29 @@ async def send_email(sender, recipient, subject, message, username, password):
         await writer.drain()
         await read_response(reader)
 
-        # Enviar nombre de usuario (pasando el username desde la función externa)
+        # Enviar nombre de usuario
         logging.debug("Enviando nombre de usuario.")
         writer.write(base64.b64encode(username.encode()) + b"\r\n")
         await writer.drain()
         await read_response(reader)
 
-        # Enviar contraseña (pasando el password desde la función externa)
+        # Enviar contraseña 
         logging.debug("Enviando contraseña.")
         writer.write(base64.b64encode(password.encode()) + b"\r\n")
         await writer.drain()
         await read_response(reader)
 
+        # Solicitar mensajes después de iniciar sesión
+        messages = await retrieve_messages(reader, writer)
+
+        if messages:
+            logging.info("Guardando mensajes en archivo local.")
+            with open("messages.txt", "w") as file:
+                file.write(messages)
+            logging.info("Mensajes guardados correctamente en messages.txt.")
+        else:
+            logging.info("No hay mensajes nuevos.")
+            
         # MAIL FROM
         logging.info(f"Enviando comando MAIL FROM para: {sender}.")
         writer.write(f"MAIL FROM:<{sender}>\r\n".encode())
