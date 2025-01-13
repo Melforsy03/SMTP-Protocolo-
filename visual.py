@@ -15,7 +15,6 @@ from kivy.metrics import dp
 import asyncio
 import re
 from cliente import send_email
-from Servidor import read_emails_from_file
 import threading
 from Servidor import start_server
 
